@@ -17,8 +17,3 @@
   package: 
     name: htop
     state: present
-
-- name: install git
-  package: 
-    name: git
-    state: present
