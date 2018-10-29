@@ -13,6 +13,8 @@
 *.tfstate
 *.tfstate.backup
 
+*.info
+
 # plan files
 .tfplan
 
