@@ -1,0 +1,140 @@
+
+##-----------------------------------------
+# vscode
+##-----------------------------------------
+
+.vscode
+.vscode/
+
+##-----------------------------------------
+# Terraform
+##-----------------------------------------
+# Compiled files (state etc)
+*.tfstate
+*.tfstate.backup
+
+# plan files
+.tfplan
+
+terraform.tfvars
+
+# Module directory
+.terraform/
+
+
+##-----------------------------------------
+# Misc
+##-----------------------------------------
+
+#ignore log files
+*.log
+
+###
+*.asc
+
+# keys - just in case; really should not be here but this is CYA territory #
+*.pem
+
+##-----------------------------------------
+# python
+##-----------------------------------------
+
+# Byte-compiled / optimized / DLL files
+python/__pycache__/
+python/*.py[cod]
+python/*$py.class
+
+# C extensions
+python/*.so
+
+# Distribution / packaging
+python/.Python
+python/build/
+python/develop-eggs/
+python/dist/
+python/downloads/
+python/eggs/
+python/.eggs/
+python/lib/
+python/lib64/
+python/parts/
+python/sdist/
+python/var/
+python/wheels/
+python/*.egg-info/
+python/.installed.cfg
+python/*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+python/*.manifest
+python/*.spec
+
+# Installer logs
+python/pip-log.txt
+python/pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+python/htmlcov/
+python/.tox/
+python/.coverage
+python/.coverage.*
+python/.cache
+python/nosetests.xml
+python/coverage.xml
+python/*.cover
+python/.hypothesis/
+
+# Translations
+python/*.mo
+python/*.pot
+
+# Django stuff:
+python/*.log
+python/local_settings.py
+
+# Flask stuff:
+python/instance/
+python/.webassets-cache
+
+# Scrapy stuff:
+python/.scrapy
+
+# Sphinx documentation
+python/docs/_build/
+
+# PyBuilder
+python/target/
+
+# Jupyter Notebook
+python/.ipynb_checkpoints
+
+# pyenv
+python/.python-version
+
+# celery beat schedule file
+python/celerybeat-schedule
+
+# SageMath parsed files
+python/*.sage.py
+
+# Environments
+python/.env
+python/.venv
+python/env/
+python/venv/
+python/ENV/
+
+# Spyder project settings
+python/.spyderproject
+python/.spyproject
+
+# Rope project settings
+python/.ropeproject
+
+# mkdocs documentation
+python//site
+
+# mypy
+python/.mypy_cache/

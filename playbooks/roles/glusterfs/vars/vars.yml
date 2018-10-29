@@ -1,0 +1,8 @@
+#-----------------
+# Ansible Variables
+#-----------------
+
+# Gluster configuration specific
+gluster_mount_dir: /data/gluster
+gluster_brick_dir: /srv/gluster/brick
+gluster_brick_name: gluster

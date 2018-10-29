@@ -1,0 +1,47 @@
+- name: Deploy GlusterFS cluster
+  hosts: all
+  become: True
+  # vars_files: 
+  #   - vars.yml
+  
+  roles:
+    - common
+    - firewall
+    - glusterfs
+  
+  tasks:
+    - name: Ensure Gluster brick and mount directories exist.
+      file: 
+        path: "{{ item }}"
+        state: directory 
+        mode: 0775
+      loop:
+          - "{{ gluster_brick_dir }}"
+          - "{{ gluster_mount_dir }}"
+
+    - debug: var=inventory_hostname
+    - debug: var=ansible_all_ipv4_addresses
+    - debug: var=ansible_default_ipv4.address
+
+    - name: Configure Gluster volume.
+      gluster_volume:
+        state: present
+        name: "{{ gluster_brick_name }}"
+        brick: "{{ gluster_brick_dir }}"
+        replicas: 3
+        #TODO: gotta get this dynamic!!!
+        cluster: 
+          - 10.100.1.239
+          - 10.100.1.95
+          - 10.100.1.85
+        host: "{{ ansible_default_ipv4.address }}"
+        force: yes
+      run_once: true
+
+    - name: Ensure Gluster volume is mounted.
+      mount:
+        name: "{{ gluster_mount_dir }}"
+        src: "{{ ansible_default_ipv4.address }}:/{{ gluster_brick_name }}"
+        fstype: glusterfs
+        opts: "defaults,_netdev"
+        state: mounted

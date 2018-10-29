@@ -1,0 +1,52 @@
+--- 
+- name: "Ensure ufw is started and enabled at boot"
+  service: 
+    name: ufw
+    state: started
+
+- name: "Configure firewall"
+  ufw: 
+    logging: true
+    state: enabled
+
+- name: "Allow ssh"
+  ufw: 
+    port: "22"
+    proto: tcp
+    rule: allow
+
+- name: "Allow port range 49152-49155 for Gluster"
+  ufw: 
+    port: "49152:49155"
+    proto: tcp
+    rule: allow
+
+- name: "Allow for Gluster daemon"
+  ufw: 
+    port: 24007
+    proto: tcp
+    rule: allow
+
+- name: "Allow for Gluster management"
+  ufw: 
+    port: 24008
+    proto: tcp
+    rule: allow
+
+- name: "Allow port range 38645-38467 for Gluster NFS"
+  ufw: 
+    port: "38465:38467"
+    proto: tcp
+    rule: allow
+
+- name: "Allow for portmapper"
+  ufw: 
+    port: 111
+    proto: tcp
+    rule: allow
+
+- name: "Allow for portmapper"
+  ufw: 
+    port: 111
+    proto: udp
+    rule: allow
