@@ -79,6 +79,6 @@ resource "aws_instance" "glusterfs" {
   # This allows the instances to fully start up.
     provisioner "local-exec" {
         working_dir = "../playbooks/"
-        command = "sleep 300; PRIVATEIPS=\"$(./ec2.py --profile default --list --refresh-cache | jq '._meta | {\"private_ips\":[.hostvars[].ec2_private_ip_address]}')\";ansible-playbook -b --private-key ${var.aws_keyfile} --limit ${self.public_ip} -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars 'ip=\"$${PRIVATEIPS}\"' gluster-cluster.yml"
+        command = "sleep 300; PRIVATEIPS=\"$(./ec2.py --profile default --list --refresh-cache | jq '._meta | {\"private_ips\":[.hostvars[].ec2_private_ip_address]}')\";ansible-playbook -b --private-key ${var.aws_keyfile} --limit ${self.public_ip} -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars 'nodes=${var.nodecount}' --extra-vars 'ip=\"$${PRIVATEIPS}\"' gluster-cluster.yml"
     }
 }
