@@ -28,7 +28,6 @@ variable "publicsubnet_two_cidr" {
 
 # ----------------------------
 # REGIONS, Keys etc
-# Change below to suit your needs
 # ----------------------------
 
 # aws region 
@@ -60,14 +59,14 @@ variable "environment" {
 }
 
 # templates for instances / launch configs
-data "template_file" "glusterfsnode_userdata" {
-  template = "${file("../global/files/bootstraps/config-basic.sh")}"
-  vars {
-    # normally this is done by changing AMI (new AMI built with new code), 
-    # but cheating here for demo purpose since changes to userdata force it as well
-    force_redeploy = "touchme-to-v1" #just increment 1->2 to force a redeploy of instances etc.
-  }
-}
+# data "template_file" "glusterfsnode_userdata" {
+#   template = "${file("../global/files/bootstraps/config-basic.sh")}"
+#   vars {
+#     # normally this is done by changing AMI (new AMI built with new code), 
+#     # but cheating here for demo purpose since changes to userdata force it as well
+#     force_redeploy = "touchme-to-v1" #just increment 1->2 to force a redeploy of instances etc.
+#   }
+# }
 
 #---Canned AMIs
 # Use get-currentamis.py to populate the below.
