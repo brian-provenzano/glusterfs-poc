@@ -2,14 +2,15 @@
 
 The goal of this exercise was to create a multi-node [GlusterFS](https://docs.gluster.org/en/latest/) storage cluster with sufficient fault tolerance to survive a single node failure with no loss of data.
 
-This was done by first building several AWS instances [Terraform](https://www.terraform.io/), then using the local-exec terraform provisioner for configuration of those instances using Ansible roles.  Ansible [dynamic inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_dynamic_inventory.html#example-aws-ec2-external-inventory-script) was used to populate the inventory due to the use of AWS instances.
+This was done by first deploying several AWS instances using [Terraform](https://www.terraform.io/), then using the local-exec terraform provisioner for configuration of those instances via Ansible roles.  Ansible [dynamic inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_dynamic_inventory.html#example-aws-ec2-external-inventory-script) was used to populate the inventory due to the use of AWS instances.
 
-The Ansible roles consisted of three roles:
-- ufw : handle configuration of a local firewall
-- glusterfs :  package installation and service enablement.
-- common : initial setup, update pkg cache etc
+Ansible roles consisted of three roles:
+- `ufw` : handle configuration of a local firewall
+- `glusterfs` :  package installation and service enablement.
+- `common` : initial setup, update pkg cache etc
 
-The playbook used to configure the cluster is the [Gluster_Volume](http://docs.ansible.com/ansible/latest/modules/gluster_volume_module.html) module.
+The playbook `gluster-cluster.yml` used to configure the cluster is based on the [Gluster_Volume](http://docs.ansible.com/ansible/latest/modules/gluster_volume_module.html) module.
+
 
 ## Getting Started
 
@@ -18,11 +19,14 @@ Clone this repo to your workstation
 ## Prerequisites
 
 - [AWS Account](https://aws.amazon.com/free/?nc2=h_ql_pr) - free tier can be utilized
-- [AWS Credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/signup-create-iam-user.html) - setup configuration locally
-- [Ansible](https://www.ansible.com)  - tested with version 2.7
-- [Terraform](https://www.terraform.io/) -  tested with version 0.11.10
+- [AWS Credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/signup-create-iam-user.html) - setup configuration locally with a 'default' profile.  Ensure your IAM user has the correct permissions (EC2FullAccess should be enough)
+- [Ansible](https://www.ansible.com)  - install locally (tested with version 2.7)
+- [Terraform](https://www.terraform.io/) -  install locally (tested with version 0.11.10)
     - You can use my [hashicorp-get](https://github.com/brian-provenzano/hashicorp-get) script to assist in installing terraform (as well as a few other hashicorp tools)
+- [jq](https://stedolan.github.io/jq/) - JSON parser used to parse and create custom json objects for ansible to consume to handle dyn inventory
 
+
+NOTE: All builds/tests were performed on Fedora 28, but should function on Linux/Mac system  - YMMV
 
 ## Initial Setup
 
@@ -30,7 +34,12 @@ After installing, configuring the prerequisites and cloning the repo, simply cha
 
 Run `terraform init` to config terraform and pull the necessary plugins.  We will default to using a local terraform state file in this project to keep things simple.
 
-To hit the ground running you can run `terraform apply` as shown below to begin preovisioning.  For the cautious people out there, you can instead run `terraform apply` without the option '-auto-approve' first, inspect what terraform is going to do then type 'yes' to proceed.
+To hit the ground running you can run `terraform apply` as shown below to begin provisioning.  For the cautious people out there, you can instead run `terraform apply` without the option '-auto-approve' first, inspect what terraform is going to do then type 'yes' to proceed.
+
+NOTE: If you are ok with exceeding free tier you can use a larger instance to speed the provisioning up.  Just set the following variable on the terraform command line to override the default t2.micro.  For example, in my testing I found that the following will double provisioning time:
+
+`-var 'gluster_instancetype=t3.medium'`
+
 
 ```
 terraform apply -auto-approve -var 'aws_keyname=<your-awskeyname>' -var 'aws_keyfile=<path-to-your-aws-keyfile-pem>' -var 'aws_profilename=<aws-profilename>'
@@ -93,7 +102,7 @@ glustercluster_publicips = [
 NOTE: Run ALL of the following ansible commands from the `playbooks` directory!  Also, if you do not wish to keep having to provide '--private-key', you can edit `ansible.cfg`  in the playbooks directory by uncommenting the privatekey line and providing the path to your aws pem file.
 
 
-Test/Check Cluster:
+#### Test/check cluster:
 
 
 `ansible all -e 'ansible_python_interpreter=/usr/bin/python3' --private-key <path-to-your-aws-keyfile> -a "gluster peer status" -b`
@@ -138,10 +147,9 @@ State: Peer in Cluster (Connected)
 
 ```
 
-Data tests:
+#### Data tests:
 
 Note: The data for your GlusterFS resides in `/data/gluster` on each node in the cluster.
-
 
 
 To test replication across the cluster, just ssh into any node and run the following: 
@@ -160,6 +168,7 @@ Now check that the data replicated to the other nodes:
 `ansible all -e 'ansible_python_interpreter=/usr/bin/python3' --private-key <path-to-your-aws-keyfile> -a "ls /data/gluster" -b`
 
 You should see the following that demonstrates that the  data replicated:
+
 ```
 54.68.0.152 | CHANGED | rc=0 >>
 replicate-me.txt
@@ -175,16 +184,16 @@ replicate-me.txt
 
 
 
-Test node failure and resilency:
+#### Test node failure and resilency:
 
- Destroying a node can be done by adding the following to the `terraform apply` command to tell terraform to remove one instance/node:
+ Destroying a node can be done by adding the following to the `terraform apply` command to tell terraform to remove one instance/node (we started with 3):
 
  `-var 'nodecount=2'`
 
 For example:
 `terraform apply -auto-approve -var 'nodecount=2' -var 'aws_keyname=myawskey' -var '/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'`
 
-You should see the following tha confirms a node was destroyed by Terraform:
+You should see the following that confirms a node was destroyed by Terraform:
 
 ```
 aws_instance.glusterfs[2]: Destroying... (ID: i-02d9bcb727a8d3920)
@@ -208,7 +217,9 @@ glustercluster_publicips = [
 ```
 
 
-To view general Gluster volume info after killing off a node:
+#### To view general Gluster volume info after killing off a node
+
+Run the following to show volume info after killing the node:
 
 
  `ansible all -e 'ansible_python_interpreter=/usr/bin/python3' --private-key <path-to-your-aws-keyfile> -a "gluster volume info" -b`
@@ -252,7 +263,8 @@ performance.client-io-threads: off
 
 ```
 
-To test operations for volume healing within a cluster:
+#### To test for volume healing within a cluster
+
 
 `ansible all -e 'ansible_python_interpreter=/usr/bin/python3' --private-key <path-to-your-aws-keyfile> -a "gluster volume heal gluster info" -b`
 
@@ -287,12 +299,30 @@ Number of entries: 0
 
 ### Idempotency Test
 
-Finally, if you'd like to test for idempotency, just re-run the Ansible playbook gluster-cluster.yml outrside of Terraform as follows:
+Finally, if you'd like to test for idempotency, just re-run the Ansible playbook gluster-cluster.yml outside of Terraform as follows:
 
 NOTE:  You may wish to run this before the "node destruction/resilency" test above so that all nodes are available.
 
+I have provided a script in the `playbooks` directory to handle this since we need to ensure $PRIVATEIPS is set due to dyn inv usage.  The argument 'your-private-key' is your AWS keyfile for ansible to use.
+
+Example:
+
+`run-glusterfs-playbook.sh ~/keys/myawskey.pem`
 
 
+## Cleanup
+
+When you are done issue `terraform destroy` to remove all resources
+
+Example:
+`terraform destroy -var 'aws_keyname=myawskey' -var '/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'`
+
+## License
+
+- [MIT License](https://docs.gluster.org/en/latest/)  (do whatever you want :))
 
 
+## Thanks
+
+- [jq](https://stedolan.github.io/jq/) - used to parse and create custom json objects for ansible to consume to handle dyn inventory
 
