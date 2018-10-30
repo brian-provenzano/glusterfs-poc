@@ -1,8 +1,9 @@
 - name: Deploy GlusterFS cluster
   hosts: all
   become: True
-  # vars_files: 
-  #   - vars.yml
+  gather_facts: true
+  vars_files: 
+    - vars.yml
   
   roles:
     - common
@@ -10,6 +11,18 @@
     - glusterfs
   
   tasks:
+
+    # - name: Wait for SSH to be ready
+    #   local_action: wait_for port=22 host="{{ ip }}"  search_regex=OpenSSH delay=10
+
+    #turn facts back on after we have a connection
+    - name: Gathering facts
+      setup:
+
+    # - name: Display all variables/facts known for a host
+    #   debug:
+    #     var: hostvars[inventory_hostname]
+
     - name: Ensure Gluster brick and mount directories exist.
       file: 
         path: "{{ item }}"
@@ -28,12 +41,9 @@
         state: present
         name: "{{ gluster_brick_name }}"
         brick: "{{ gluster_brick_dir }}"
-        replicas: 3
-        #TODO: gotta get this dynamic!!!
-        cluster: 
-          - 10.100.1.239
-          - 10.100.1.95
-          - 10.100.1.85
+        replicas: "{{ nodes }}"
+        #dyn inv - grab inv from ec2.py and pass into ansible in json format
+        cluster: "{{ private_ips }}"
         host: "{{ ansible_default_ipv4.address }}"
         force: yes
       run_once: true
