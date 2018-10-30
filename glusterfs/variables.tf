@@ -6,6 +6,11 @@ variable "nodecount" {
   default = 3
 }
 
+variable "gluster_instancetype" {
+  description = "instance type to use for the gluster cluster"
+  default = "t2.micro" #falls in free tier; but use t3.medium for faster creation
+}
+
 # ---------------------
 # Networking : VPCs,etc
 # ---------------------
