@@ -7,9 +7,9 @@
 # Make certain you have AWS CLI setup with a profle/credentials :
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
 #
-export EC2_INSTANCE_FILTERS='tag:Name=GlusterFS-*'
+#export EC2_INSTANCE_FILTERS='tag:Name=GlusterFS-*' #set in ini now
 export EC2_INI_PATH=ec2.ini
-echo $EC2_INSTANCE_FILTERS
+#echo $EC2_INSTANCE_FILTERS
 echo $EC2_INI_PATH
 echo "----------------"
 python ec2.py --profile default --refresh-cache
