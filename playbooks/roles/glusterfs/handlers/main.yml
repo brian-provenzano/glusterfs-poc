@@ -1,0 +1,9 @@
+---
+- name: start glusterfs-server
+  systemd: state=started name=glusterd
+
+- name: enable glusterfs-server
+  systemd:
+    name: "glusterd"
+    enabled: yes
+    masked: no

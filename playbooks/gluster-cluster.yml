@@ -41,8 +41,8 @@
         state: present
         name: "{{ gluster_brick_name }}"
         brick: "{{ gluster_brick_dir }}"
-        replicas: "{{ nodes }}"
-        #dyn inv - grab inv from ec2.py and pass into ansible in json format
+        replicas: 3
+        #dyn inv - grab inv from ec2.py and pass into ansible as extravar in json format
         cluster: "{{ private_ips }}"
         host: "{{ ansible_default_ipv4.address }}"
         force: yes
