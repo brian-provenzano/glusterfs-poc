@@ -2,7 +2,7 @@
 # CREATE THE SSH ONLY SECURITY GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 # 1 - Security group for instance with SSH
-resource "aws_security_group" "ssh_only" {
+resource "aws_security_group" "ssh_with_gluster" {
   name = "${var.environment}-sshonly"
   vpc_id = "${aws_vpc.main.id}"
   
@@ -47,7 +47,7 @@ resource "aws_security_group" "ssh_only" {
   }
 
   tags {
-    Name = "${var.environment}-sshonly"
+    Name = "${var.environment}-ssh-with-gluster"
     Terraform = "true"
     Environment = "${var.environment}"
   }
