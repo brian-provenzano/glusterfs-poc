@@ -9,11 +9,6 @@
 #also consider moving this to another role to prevent accidental playbook upgrades...
 - name: update and upgrade apt packages
   apt:
-    upgrade: yes
+    #upgrade: yes
     force_apt_get: yes
     update_cache: yes
-
-- name: install htop
-  package: 
-    name: htop
-    state: present
