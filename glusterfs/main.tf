@@ -53,7 +53,7 @@ resource "aws_instance" "glusterfs" {
   count = "${var.nodecount}"
 
   ami = "${lookup(var.ubuntu1804_amis, var.region)}"
-  instance_type = "t3.micro"
+  instance_type = "${var.gluster_instancetype}"
   key_name = "${var.aws_keyname}"
   vpc_security_group_ids = ["${module.networking.ssh_security_group_id}"]
   subnet_id = "${module.networking.public_subnets[0]}"
