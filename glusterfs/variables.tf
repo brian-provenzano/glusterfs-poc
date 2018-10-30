@@ -1,6 +1,11 @@
 #environment|testing
 # !!! leave line above as is - do not delete (used in our tfwrapper) !!!
 
+variable "nodecount" {
+  description = "The number of nodes to create in the gluster cluster"
+  default = 3
+}
+
 # ---------------------
 # Networking : VPCs,etc
 # ---------------------
@@ -65,7 +70,7 @@ data "template_file" "glusterfsnode_userdata" {
 }
 
 #---Canned AMIs
-# TODO - prep a script that automates this to always get latest AMIs for each distro
+# Use get-currentamis.py to populate the below.
 
 # Ubuntu 18.04 LTS
 variable "ubuntu1804_amis" {
@@ -75,6 +80,16 @@ variable "ubuntu1804_amis" {
     us-west-2 = "ami-0f47ef92b4218ec09"
   }
 }
+
+# Ubuntu 16.04 LTS
+variable "ubuntu1604_amis" {
+  type = "map"
+  default = {
+    us-west-1 = "ami-0d246a5d0c8b685ea"
+    us-west-2 = "ami-01e0cf6e025c036e4"
+  }
+}
+
 # Amazon Linux
 variable "amlinux2_amis" {
   default = {
