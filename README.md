@@ -26,9 +26,9 @@ Clone this repo to your workstation
 - [jq](https://stedolan.github.io/jq/) - JSON parser used to parse and create custom json objects for ansible to consume to handle dyn inventory
 
 
-NOTE: All builds/tests were performed on Fedora 28, but should function on Linux/Mac system  - YMMV
+NOTE: All builds/tests were performed on Fedora 28, but should function on Linux/Mac systems  - YMMV
 
-## Initial Setup
+## Initial Setup    
 
 After installing, configuring the prerequisites and cloning the repo, simply change directory into `glusterfs` to begin.
 
@@ -36,7 +36,7 @@ Run `terraform init` to config terraform and pull the necessary plugins.  We wil
 
 To hit the ground running you can run `terraform apply` as shown below to begin provisioning.  For the cautious people out there, you can instead run `terraform apply` without the option '-auto-approve' first, inspect what terraform is going to do then type 'yes' to proceed.
 
-NOTE: If you are ok with exceeding free tier you can use a larger instance to speed the provisioning up.  Just set the following variable on the terraform command line to override the default t2.micro.  For example, in my testing I found that the following will double provisioning time:
+NOTE: If you are ok with exceeding free tier you can use a larger instance to speed the provisioning up.  Just set the following variable on the terraform command line to override the default t2.micro.  For example, in my testing I found that the following will drastically reduce the provisioning time:
 
 `-var 'gluster_instancetype=t3.medium'`
 
@@ -99,7 +99,7 @@ glustercluster_publicips = [
 ### Tests / Demo Cluster functionality
 
 
-NOTE: Run ALL of the following ansible commands from the `playbooks` directory!  Also, if you do not wish to keep having to provide '--private-key', you can edit `ansible.cfg`  in the playbooks directory by uncommenting the privatekey line and providing the path to your aws pem file.
+NOTE: Run ALL of the following ansible commands from the `playbooks` directory!  Also, if you do not wish to omit the '--private-key' option, you can edit `ansible.cfg`  in the playbooks directory.  Just uncomment the 'privatekey' line and provide the path to your aws key pem file.
 
 
 #### Test/check cluster:
@@ -324,7 +324,7 @@ Finally, if you'd like to test for idempotency, just re-run the Ansible playbook
 
 NOTE:  You may wish to run this before the "node destruction/resilency" test above so that all nodes are available.
 
-I have provided a script in the `playbooks` directory to handle this since we need to ensure $PRIVATEIPS is set due to dyn inv usage.  The argument 'your-private-key' is your AWS keyfile for ansible to use.
+I have provided a script in the `playbooks` directory to handle this since we need to ensure $PRIVATEIPS is set due to dyn inv usage.  The one argument for the script is the AWS keyfile for ansible to use.
 
 Example:
 
@@ -336,7 +336,9 @@ Example:
 When you are done issue `terraform destroy` to remove all resources
 
 Example:
+
 `terraform destroy -var 'aws_keyname=myawskey' -var 'aws_keyfile=/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'`
+
 
 ## License
 
