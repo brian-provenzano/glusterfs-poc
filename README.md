@@ -1,4 +1,4 @@
-# GlusterFS Cluster Exercise
+# GlusterFS Cluster POC
 
 The goal of this exercise was to create a multi-node [GlusterFS](https://docs.gluster.org/en/latest/) storage cluster with sufficient fault tolerance to survive a single node failure with no loss of data.
 
@@ -41,14 +41,14 @@ NOTE: If you are ok with exceeding free tier you can use a larger instance to sp
 `-var 'gluster_instancetype=t3.medium'`
 
 
-```
-terraform apply -auto-approve -var 'aws_keyname=<your-awskeyname>' -var 'aws_keyfile=<path-to-your-aws-keyfile-pem>' -var 'aws_profilename=<aws-profilename>'
-```
+`terraform apply -auto-approve -var 'aws_keyname=<your-awskeyname>' -var 'aws_keyfile=<path-to-your-aws-keyfile-pem>' -var 'aws_profilename=<aws-profilename>'`
+
 
 For example - assuming use of the 'default' AWS profile:
-```
-terraform apply -auto-approve -var 'aws_keyname=myawskey' -var '/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'
-```
+
+`terraform apply -auto-approve -var 'aws_keyname=myawskey' -var 'aws_keyfile=/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'`
+
+
 
 This might take several minutes to complete, but you should see the following immediately:
 
@@ -103,6 +103,9 @@ NOTE: Run ALL of the following ansible commands from the `playbooks` directory! 
 
 
 #### Test/check cluster:
+
+
+Run test on all nodes (optionally you can use 'tag_GlusterNode_true' instead of 'all')
 
 
 `ansible all -e 'ansible_python_interpreter=/usr/bin/python3' --private-key <path-to-your-aws-keyfile> -a "gluster peer status" -b`
@@ -190,12 +193,30 @@ replicate-me.txt
 
  `-var 'nodecount=2'`
 
-For example:
-`terraform apply -auto-approve -var 'nodecount=2' -var 'aws_keyname=myawskey' -var '/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'`
+For example (`-auto-approve` removed in this case so we can follow the plan):
+
+`terraform apply -var 'nodecount=2' -var 'aws_keyname=myawskey' -var 'aws_keyfile=/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'`
 
 You should see the following that confirms a node was destroyed by Terraform:
 
 ```
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  - aws_instance.glusterfs[2]
+
+
+Plan: 0 to add, 0 to change, 1 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+....
+
 aws_instance.glusterfs[2]: Destroying... (ID: i-02d9bcb727a8d3920)
 aws_instance.glusterfs.2: Still destroying... (ID: i-02d9bcb727a8d3920, 10s elapsed)
 aws_instance.glusterfs.2: Still destroying... (ID: i-02d9bcb727a8d3920, 20s elapsed)
@@ -315,14 +336,9 @@ Example:
 When you are done issue `terraform destroy` to remove all resources
 
 Example:
-`terraform destroy -var 'aws_keyname=myawskey' -var '/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'`
+`terraform destroy -var 'aws_keyname=myawskey' -var 'aws_keyfile=/home/testuser/keys/myawskey.pem' -var 'aws_profilename=default'`
 
 ## License
 
 - [MIT License](https://docs.gluster.org/en/latest/)  (do whatever you want :))
-
-
-## Thanks
-
-- [jq](https://stedolan.github.io/jq/) - used to parse and create custom json objects for ansible to consume to handle dyn inventory
 
