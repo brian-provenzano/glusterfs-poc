@@ -35,6 +35,13 @@ Repository contents:
 
 NOTE: All builds/tests were performed on Fedora 28, but should function on Linux/Mac systems  - YMMV
 
+
+## Known Issues / Suggestions
+
+- To speed up provisioning and testing, consider using a larger instance type such as t3.medium.  In my testing, moving from t2.micro to t3.medium decreased the provisioning time by at least 2-3x.  You can do so by passing `-var 'gluster_instancetype=t3.medium'` to terraform to override the t2.micro default
+- During ansible pkg installation of the glusterfs-client and server, I have noticed random failures of the pkg install (pkg would install OK but through an error that woudld cause ansible to complain, failing the process).  To overcome this, I added retries to the ansible task "Install / Start GlusterFS Services" in the glusterfs role.  In my testing, this solves the issue
+
+
 ## Initial Setup    
 
 After installing, configuring the prerequisites and cloning the repo, simply change directory into `glusterfs` to begin.
