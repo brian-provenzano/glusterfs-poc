@@ -16,6 +16,13 @@ The playbook `gluster-cluster.yml` used to configure the cluster is based on the
 
 Clone this repo to your workstation
 
+Repository contents:
+- `global` : supporting files used by terraform
+- `glusterfs` :  contains the terraform configuration files
+- `modules` : supporting terraform modules
+- `playbooks` : contains the ansible playbook, roles and supporting files/scripts
+- `get-currentamis.py` : simple helper script that provides latest AWS AMIs (subset) for any region.
+
 ## Prerequisites
 
 - [AWS Account](https://aws.amazon.com/free/?nc2=h_ql_pr) - free tier can be utilized
