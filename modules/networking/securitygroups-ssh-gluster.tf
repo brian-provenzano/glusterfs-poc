@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# CREATE THE SSH ONLY SECURITY GROUP
+# CREATE THE SSH / GLUSTER SECURITY GROUP
 # ---------------------------------------------------------------------------------------------------------------------
-# 1 - Security group for instance with SSH
+# 1 - Security group for instance with SSH / glusterfs
 resource "aws_security_group" "ssh_with_gluster" {
   name = "${var.environment}-sshonly"
   vpc_id = "${aws_vpc.main.id}"
