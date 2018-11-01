@@ -24,7 +24,7 @@ variable "mysql_port" {
 
 variable "home_publicaddress" {
   description = "the current home IP address I am running terraform from that is used for access in SGs"
-  default     = "24.9.31.138/32"
+  default     = "0.0.0.0/0"
 }
 
 variable "icmp_typenumber_ping" {
